@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memory-game-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: memory-game
+  template:
+    metadata:
+      labels:
+        app: memory-game
+    spec:
+      containers:
+      - name: memory-game
+        image: your-dockerhub-username/memory-game:latest
+        ports:
+        - containerPort: 5000
