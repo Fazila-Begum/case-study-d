@@ -37,13 +37,25 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
-                sh '''
-                kubectl apply -f deployment.yaml
-                kubectl rollout restart deployment/memory-game-deployment
-                '''
-            }
+    steps {
+        withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+            sh '''
+            # For Linux/macOS agents
+            export KUBECONFIG=$KUBECONFIG_FILE
+
+            # For Windows agents (PowerShell)
+            # set KUBECONFIG=%KUBECONFIG_FILE%
+
+            # Apply Kubernetes deployment
+            kubectl apply -f deployment.yaml
+
+            # Restart deployment to pull new image
+            kubectl rollout restart deployment/memory-game-deployment
+            '''
         }
+    }
+}
+
     }
 
     post {
@@ -55,3 +67,4 @@ pipeline {
         }
     }
 }
+
